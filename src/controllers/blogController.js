@@ -4,7 +4,7 @@ const authorModel = require("../models/authorModel")
 const moment = require('moment');
 
 const valid = function (value) {
-    if (typeof value !== "string" || value.trim().length == 0) { return false }
+    if (typeof value !== "string" || value.trim().length == 0) { return false } 
     return true
 }
 
@@ -37,7 +37,7 @@ const createBlog = async function (req, res) {
             for (let i = 0; i < blogData.tags.length; i++) {
                 if (!valid(blogData.tags[i])) { return res.status(400).send({ status: false, message: "tags is not valid" }) }
             }
-        }
+        } 
 
         if (blogData.isPublished) { if (typeof blogData.isPublished !== "boolean") { return res.status(400).send({ status: false, message: "value must be in boolean" }) } }
 
@@ -79,7 +79,7 @@ const Bloglist = async function (req, res) {
 
         let bloglist = await blogModel.find({ isDeleted: false, isPublished: true, $or: [{ author_Id: id }, { category: category }, { tags: tag }, { subCategory: sub }] })
 
-        if (!bloglist.length==0) {
+        if (!bloglist.length) {
             res.status(404).send({ status: false, msg: "blogs not found" })
         }
 
@@ -130,7 +130,7 @@ const BlogById = async function (req, res) {
             title: blogData.title,
             body: blogData.body,
             publishedAt: new Date(),
-            isPublished: true
+            isPublished: blogData.isPublished
         },
             { new: true })
         if (list == null) {
@@ -153,7 +153,7 @@ const deleteBlogData = async function (req, res) {
             return res.status(400).send({ msg: 'no such blog exists' });
         }
 
-        let deleteUser = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true,isDeletedAt: new Date() }, { new: true })
+        let deleteUser = await blogModel.findOneAndUpdate({ _id: blogId }, { isDeleted: true, isDeletedAt: new Date() }, { new: true })
         res.status(200).send({ status: true, data: "deleted succesfully" })
     } catch (err) { return res.status(500).send({ status: false, msg: err.message }) }
 
@@ -170,6 +170,7 @@ const updateBlogData = async function (req, res) {
         if (!data) return res.status(400).send({ error: "Enter Valid Input " })
 
         const dataforUpdation = { ...data, isDeleted: true, isDeletedAt: new Date() }
+        
 
         const result = await blogModel.updateMany(data, dataforUpdation, { new: true })
 
@@ -182,6 +183,8 @@ const updateBlogData = async function (req, res) {
         res.status(500).send({ msg: err.message })
     }
 }
+
+
 
 
 
